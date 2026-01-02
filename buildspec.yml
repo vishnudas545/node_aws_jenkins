@@ -4,19 +4,20 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws --version
-      - $(aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin 913524910363.dkr.ecr.us-east-1.amazonaws.com)
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION \
+        | docker login --username AWS --password-stdin 913524910363.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+
 
   build:
     commands:
       - echo Build started on `date`
       - docker build -t eks/snapshot/test .
-      - docker tag hello-world-app-latest 913524910363.dkr.ecr.us-east-1.amazonaws.com/eks/snapshot/test:hello-world-app-latest
+      - docker tag hello-world-app-latest 913524910363.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/eks/snapshot/test:hello-world-app-latest
 
   post_build:
     commands:
       - echo Build completed on `date`
-      - docker push 913524910363.dkr.ecr.us-east-1.amazonaws.com/eks/snapshot/test:hello-world-app-latest
+      - docker push 913524910363.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/eks/snapshot/test:hello-world-app-latest
 
 artifacts:
   files:
