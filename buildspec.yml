@@ -1,24 +1,24 @@
 version: 0.2
 
+env:
+  variables:
+    AWS_ACCOUNT_ID: "913524910363"
+    AWS_REGION: "us-east-1"
+    ECR_REPO: "eks/snapshot/test"
+    IMAGE_TAG: "hello-world-app-latest"
+
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin 913524910363.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-
-
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
   build:
     commands:
       - echo Build started on `date`
-      - docker build -t eks/snapshot/test .
-      - docker tag hello-world-app-latest 913524910363.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/eks/snapshot/test:hello-world-app-latest
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG .
 
   post_build:
     commands:
       - echo Build completed on `date`
-      - docker push 913524910363.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/eks/snapshot/test:hello-world-app-latest
-
-artifacts:
-  files:
-    - '**/*'
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
